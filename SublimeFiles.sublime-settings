@@ -13,7 +13,7 @@
     "start_directory": null,
 
     // If provided, new rows appear in the navigator which can call commands.
-    "additional_commands": {
-        "SFTP": "sftp_browse_server"
-    }
+    "additional_commands": [
+        {"label": "SFTP", "command": "sftp_browse_server"}
+    ]
 }
