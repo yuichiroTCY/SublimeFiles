@@ -41,6 +41,7 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
             self.term_command = settings.get('term_command')
             self.ignore_list = settings.get('ignore_list')
             self.start_directory = settings.get('start_directory')
+            self.additional_commands = settings.get('additional_commands', {})
             if self.start_directory is not None:
                 self.start_directory = os.path.abspath(os.path.expanduser(self.start_directory))
                 if not os.path.exists(self.start_directory):
@@ -59,8 +60,12 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
         if self.start_directory is None:
             self.check_project_root()
         self.current_dir = self.getcwd()
-        self.dir_files = ['[' + self.getcwd() + ']',
-            bullet + ' Directory actions', '..' + os.sep, '~' + os.sep]
+        self.dir_files = ['[' + self.getcwd() + ']', bullet + ' Directory actions',]
+
+        for label, command in self.additional_commands.items():
+            self.dir_files.append(bullet + ' ' + label)
+
+        self.dir_files.extend(['..' + os.sep, '~' + os.sep])
 
         # annoying way to deal with windows
         if sublime.platform() == 'windows':
@@ -114,6 +119,9 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
                 self.open_navigator()
             elif call_value == 1:
                 self.open_directory_options()
+            # additional commands
+            elif 3<=call_value and call_value<3+len(self.additional_commands):
+                self.window.run_command(self.additional_commands[option[2:]])
             elif option == '~' + os.sep:
                 os.chdir(os.getenv(self.home))
             elif option == '..' + os.sep:
