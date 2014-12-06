@@ -10,5 +10,10 @@
 
     // If provided, will always start navigation from given directory.
     // Use "~" to point to home directory, null to disable.
-    "start_directory": null
+    "start_directory": null,
+
+    // If provided, new rows appear in the navigator which can call commands.
+    "additional_commands": {
+        "SFTP": "sftp_browse_server"
+    }
 }
