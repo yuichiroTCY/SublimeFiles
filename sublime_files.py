@@ -62,8 +62,8 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
         self.current_dir = self.getcwd()
         self.dir_files = ['[' + self.getcwd() + ']', bullet + ' Directory actions',]
 
-        for label, command in self.additional_commands.items():
-            self.dir_files.append(bullet + ' ' + label)
+        for row in self.additional_commands:
+            self.dir_files.append(bullet + ' ' + row['label'])
 
         self.dir_files.extend(['..' + os.sep, '~' + os.sep])
 
@@ -119,9 +119,6 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
                 self.open_navigator()
             elif call_value == 1:
                 self.open_directory_options()
-            # additional commands
-            elif 3<=call_value and call_value<3+len(self.additional_commands):
-                self.window.run_command(self.additional_commands[option[2:]])
             elif option == '~' + os.sep:
                 os.chdir(os.getenv(self.home))
             elif option == '..' + os.sep:
@@ -132,6 +129,12 @@ class SublimeFilesCommand(sublime_plugin.WindowCommand):
                 os.chdir(os.path.dirname(self.window.active_view().file_name()))
             elif option.startswith(bullet + ' To bookmark'):
                 os.chdir(self.bookmark)
+            # additional commands
+            elif option.startswith(bullet):
+                for row in self.additional_commands:
+                    if (row["label"] == option[2:]):
+                        self.window.run_command(row["command"])
+                        break
             else:
                 fullpath = os.path.join(self.getcwd(), self.dir_files[call_value])
                 if os.path.isdir(fullpath):  # navigate to directory
